@@ -1,9 +1,9 @@
-# hn-digest (Agent Skill)
+# hn-digest-skill
 
 Skill para generar un digest curado de **Hacker News**.
 
 - Pensado para usarse desde agentes tipo **openclaw / Claude Code / Codex**.
-- Todo es **configurable vía YAML** (no hay que tocar el código).
+- Todo es **configurable vía YAML**.
 - Incluye **rotación/paginación** con caché de `seen` para que ejecuciones consecutivas saquen *los siguientes* artículos interesantes (sin repetir).
 
 ## Quick start
@@ -11,10 +11,10 @@ Skill para generar un digest curado de **Hacker News**.
 ```bash
 cd /root/clawd/skills/hn-digest
 
-# 1) Config
+# Config
 cp config.example.yaml config.yaml
 
-# 2) Run
+# Run
 python3 scripts/hn_digest.py --config config.yaml
 ```
 
@@ -30,7 +30,7 @@ Archivo: `config.yaml`
 
 ### `hn`
 - `list`: `topstories | beststories | newstories`
-- `top_n`: número máximo de items a considerar (límite global del pool)
+- `top_n`: tamaño máximo del pool (límite duro)
 - `fetch_n`: cuántos IDs pedir a HN para tener pool suficiente (subir si repite)
 - `min_score`: mínimo de puntos (excepto `Show HN`)
 - `show_hn_max`: máximo de Show HN
@@ -40,19 +40,17 @@ Archivo: `config.yaml`
 
 ### `categories`
 Mapa `Categoria -> [keywords...]`.
-La categorización es por match simple en título (lowercase).
+La categorización es match simple sobre el título (lowercase).
 
 ### `output`
-- `destacados_count`: cuántos destacados
-- `max_per_category`: cuántos por categoría
-- `max_otros`: cuántos en “OTROS”
-- `separator`: separador visual (compacto para Telegram)
+- `destacados_count`
+- `max_per_category`
+- `max_otros`
+- `separator` (compacto para Telegram)
 
 ### `summarize`
 - `enabled`: true/false
-- `language`: `es` (recomendado)
-- `length`: `short`
-- `model`: modelo para summarize (por defecto `cli/codex/gpt-5.2`)
+- `language`, `length`, `model`
 - `timeout_seconds`: si falla/timeout, **se omite** el resumen
 
 ### `cache`
@@ -65,11 +63,12 @@ La categorización es por match simple en título (lowercase).
 
 En cada ejecución:
 1) Descarga la lista de IDs (p.ej. `topstories`).
-2) Recorre en orden y **va llenando cupos por sección** (destacados/categorías/otros/show-hn), saltando:
+2) Recorre en orden y **va llenando cupos por sección** (categorías/otros/show-hn), saltando:
    - excluidos
    - por debajo del mínimo
    - ya vistos según caché (TTL)
-3) Guarda en caché los IDs realmente emitidos.
+3) Calcula **Destacados** como top por puntos del pool.
+4) Guarda en caché los IDs realmente emitidos.
 
 Resultado: al pedir “Digest HN” varias veces seguidas, te da *los siguientes* sin repetir.
 
@@ -77,9 +76,8 @@ Resultado: al pedir “Digest HN” varias veces seguidas, te da *los siguientes
 
 - Python 3
 - `pyyaml` (para leer `config.yaml`)
-- CLI `summarize` (opcional; si no está o falla, se omite el resumen)
+- CLI `summarize` (opcional)
 
-## Desarrollo
+## Nota
 
-- El script principal está en `scripts/hn_digest.py`.
-- El contrato de configuración está en `config.example.yaml`.
+Existe un implementation legacy en Node (`scripts/hn_digest.js` + `src/`) que se mantiene por compatibilidad, pero la ruta recomendada es `scripts/hn_digest.py` + YAML.

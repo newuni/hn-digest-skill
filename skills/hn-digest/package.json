@@ -1,0 +1,14 @@
+{
+  "name": "@clawd/hn-digest",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "HN Digest generator for Clawdbot (newuni prefs)",
+  "scripts": {
+    "test": "node --test",
+    "lint": "node -c src/*.js scripts/*.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

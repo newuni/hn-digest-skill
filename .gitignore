@@ -1,0 +1,11 @@
+# Local/user-specific
+config.yaml
+cache.json
+.cache/
+
+# Python
+__pycache__/
+*.pyc
+
+# Node
+node_modules/

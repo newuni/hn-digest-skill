@@ -3,6 +3,7 @@ import { fetchTopStories } from '../src/hn.js';
 import { filterStories, pickShowHN } from '../src/filters.js';
 import { groupByCategory } from '../src/categorize.js';
 import { dropShowFromMain, renderDigest, selectHighlights, toDateLabel } from '../src/render.js';
+import { summarizeMany } from '../src/summarize.js';
 
 function parseArgs(argv) {
   const out = {
@@ -12,6 +13,15 @@ function parseArgs(argv) {
     tz: 'Europe/Madrid',
     maxPerCategory: 5,
     highlights: 5,
+
+    // Per-item summaries via summarize.sh CLI
+    summarize: true,
+    summarizeLanguage: 'es',
+    summarizeLength: 'short',
+    summarizeModel: 'cli/codex/gpt-5.2',
+    summarizeTimeoutMs: 25000,
+    summarizeConcurrency: 4,
+
     cacheDays: 7,
     cachePath: null
   };
@@ -26,8 +36,22 @@ function parseArgs(argv) {
     else if (a === '--highlights') out.highlights = Number(next());
     else if (a === '--cacheDays') out.cacheDays = Number(next());
     else if (a === '--cachePath') out.cachePath = next();
+
+    else if (a === '--summarize') out.summarize = true;
+    else if (a === '--no-summarize') out.summarize = false;
+    else if (a === '--summarizeLanguage') out.summarizeLanguage = next();
+    else if (a === '--summarizeLength') out.summarizeLength = next();
+    else if (a === '--summarizeModel') out.summarizeModel = next();
+    else if (a === '--summarizeTimeoutMs') out.summarizeTimeoutMs = Number(next());
+    else if (a === '--summarizeConcurrency') out.summarizeConcurrency = Number(next());
+
     else if (a === '--help' || a === '-h') {
-      console.log(`Usage: hn_digest [--top N] [--topFetch N] [--minPoints N] [--tz TZ] [--maxPerCategory N] [--highlights N] [--cacheDays N] [--cachePath PATH]`);
+      console.log(
+        `Usage: hn_digest [--top N] [--topFetch N] [--minPoints N] [--tz TZ] [--maxPerCategory N] [--highlights N] ` +
+        `[--cacheDays N] [--cachePath PATH] ` +
+        `[--summarize|--no-summarize] [--summarizeLanguage es] [--summarizeLength short] [--summarizeModel MODEL] ` +
+        `[--summarizeTimeoutMs 25000] [--summarizeConcurrency 4]`
+      );
       process.exit(0);
     }
   }
@@ -61,6 +85,16 @@ const showAll = pickShowHN(stories, { max: 50 }); // pick candidates, then trim
 const showFresh = filterUnseen(showAll, cache).slice(0, 3);
 
 const main = dropShowFromMain(keptFresh).slice(0, opts.top);
+
+// Per-item summaries (best-effort). We attach `_summary` to each item.
+await summarizeMany([...main, ...showFresh], {
+  enabled: opts.summarize,
+  language: opts.summarizeLanguage,
+  length: opts.summarizeLength,
+  model: opts.summarizeModel,
+  timeoutMs: opts.summarizeTimeoutMs,
+  concurrency: opts.summarizeConcurrency
+});
 
 const highlights = selectHighlights(main, { count: opts.highlights });
 const grouped = groupByCategory(main);

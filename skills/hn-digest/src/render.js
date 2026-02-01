@@ -24,6 +24,10 @@ export function defaultBlurb(title = '') {
   return 'Tema con tracción hoy; merece vistazo por el ángulo técnico y la discusión.';
 }
 
+export function blurbFor(item) {
+  return (item && item._summary) ? item._summary : defaultBlurb(item?.title ?? '');
+}
+
 export function renderDigest({
   dateLabel,
   highlights = [],
@@ -44,7 +48,7 @@ export function renderDigest({
     const com = it.descendants ?? 0;
     lines.push(`**${it.title}**`);
     lines.push(`🔥 ${pts} pts · ${com} comentarios`);
-    lines.push(defaultBlurb(it.title));
+    lines.push(blurbFor(it));
     lines.push(`📎 ${storyUrl(it)}`);
     lines.push(`💬 ${hnLink(it.id)}`);
     lines.push('');
@@ -61,6 +65,7 @@ export function renderDigest({
       const pts = it.score ?? 0;
       const com = it.descendants ?? 0;
       lines.push(`- **${it.title}** (${pts} pts) · ${com} com`);
+      lines.push(`  ${blurbFor(it)}`);
       lines.push(`  📎 ${storyUrl(it)}`);
       lines.push(`  💬 ${hnLink(it.id)}`);
     }
@@ -77,6 +82,7 @@ export function renderDigest({
       const com = it.descendants ?? 0;
       lines.push(`**${it.title}**`);
       lines.push(`${pts} pts · ${com} comentarios`);
+      lines.push(blurbFor(it));
       lines.push(`📎 ${storyUrl(it)}`);
       lines.push(`💬 ${hnLink(it.id)}`);
       lines.push('');

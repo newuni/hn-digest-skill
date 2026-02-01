@@ -97,7 +97,12 @@ await summarizeMany([...main, ...showFresh], {
 });
 
 const highlights = selectHighlights(main, { count: opts.highlights });
-const grouped = groupByCategory(main);
+
+// Avoid duplicates inside the same digest: highlights are printed first,
+// so group the *rest* for category sections.
+const highlightIds = new Set(highlights.map(s => s.id));
+const rest = main.filter(s => !highlightIds.has(s.id));
+const grouped = groupByCategory(rest);
 
 const md = renderDigest({
   dateLabel: toDateLabel({ tz: opts.tz }),

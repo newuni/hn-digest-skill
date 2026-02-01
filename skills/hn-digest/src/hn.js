@@ -20,9 +20,9 @@ export async function getJson(url, { timeoutMs = 15000, fetchImpl = fetch } = {}
   }
 }
 
-export async function fetchTopStoryIds({ top = 30, baseUrl = HN_BASE, ...rest } = {}) {
-  const ids = await getJson(`${baseUrl}/topstories.json`, rest);
-  if (!Array.isArray(ids)) throw new Error('HN topstories did not return an array');
+export async function fetchTopStoryIds({ top = 30, list = 'topstories', baseUrl = HN_BASE, ...rest } = {}) {
+  const ids = await getJson(`${baseUrl}/${list}.json`, rest);
+  if (!Array.isArray(ids)) throw new Error(`HN ${list} did not return an array`);
   return ids.slice(0, top);
 }
 

@@ -11,15 +11,20 @@ Genera un resumen diario de las mejores historias de Hacker News, personalizado 
 
 ```bash
 node /root/clawd/skills/hn-digest/skills/hn-digest/scripts/hn_digest.js \
+  --list topstories \
   --top 30 \
-  --topFetch 200 \
+  --topFetch 250 \
   --minPoints 80 \
   --tz Europe/Madrid \
-  --cacheDays 7
+  --seenTtlHours 24 \
+  --summarize \
+  --summarizeLength short \
+  --summarizeLanguage es
 ```
 
-- Cache anti-repetidos: `/root/clawd/skills/hn-digest/skills/hn-digest/.cache/seen.json`
-- `topFetch` sirve para tener pool suficiente y que en llamadas consecutivas siga habiendo unseen.
+- Cache anti-repetidos + paginación determinista (cola pendiente): `/root/clawd/skills/hn-digest/skills/hn-digest/.cache/seen.json`
+- `seenTtlHours` controla la ventana de “no repetir” (por defecto 24h).
+- `topFetch` controla cuántos IDs se cargan a la cola pendiente para que cada ejecución saque *los siguientes* sin repetidos.
 
 ## Cómo funciona (resumen)
 

@@ -21,11 +21,12 @@ El código “bueno” vive en:
 cd /root/clawd/skills/hn-digest
 
 node skills/hn-digest/scripts/hn_digest.js \
+  --list topstories \
   --top 30 \
-  --topFetch 200 \
+  --topFetch 250 \
   --minPoints 80 \
   --tz Europe/Madrid \
-  --cacheDays 7
+  --seenTtlHours 24
 ```
 
 ### Tests

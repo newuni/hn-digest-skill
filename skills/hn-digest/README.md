@@ -25,14 +25,17 @@ Opciones útiles:
 node skills/hn-digest/scripts/hn_digest.js --top 30 --minPoints 80 --tz Europe/Madrid
 ```
 
-Por defecto usa una caché local (últimos 7 días) para **evitar repetir historias** entre ejecuciones.
+La selección es **paginada y determinista**: cada ejecución consume una cola pendiente (persistida en caché) para sacar *los siguientes* ítems.
 
 ```bash
-# Cambiar ventana de caché / path
-node skills/hn-digest/scripts/hn_digest.js --cacheDays 7 --cachePath /tmp/hn-seen.json
+# Ventana anti-repetidos (recomendado: 24h)
+node skills/hn-digest/scripts/hn_digest.js --seenTtlHours 24
 
-# Si quieres más “pool” para evitar repeticiones, sube topFetch
-node skills/hn-digest/scripts/hn_digest.js --topFetch 200
+# Cambiar path de caché
+node skills/hn-digest/scripts/hn_digest.js --cachePath /tmp/hn-seen.json
+
+# Si quieres más “pool” para evitar quedarte sin unseen, sube topFetch
+node skills/hn-digest/scripts/hn_digest.js --topFetch 300
 ```
 
 Salida: Markdown listo para Telegram.

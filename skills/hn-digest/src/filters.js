@@ -5,8 +5,14 @@ export function isShowHN(title = '') {
 // Excluir Apple/Mac, automoción/coches/EVs (heurístico)
 const EXCLUDE_RE = /\b(apple|mac|iphone|ipad|ios|vision\s*pro|tesla|\bev\b|electric\s+vehicle|car|cars|automotive)\b/i;
 
-export function isExcludedByTitle(title = '') {
-  return EXCLUDE_RE.test(title);
+export function isExcludedByTitle(text = '') {
+  return EXCLUDE_RE.test(text);
+}
+
+export function isExcluded(item) {
+  const title = item?.title ?? '';
+  const url = item?.url ?? '';
+  return isExcludedByTitle(title) || isExcludedByTitle(url);
 }
 
 export function passesScore(item, { minPoints = 80 } = {}) {

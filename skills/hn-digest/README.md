@@ -16,23 +16,23 @@ Genera un digest curado de **Hacker News** para newuni.
 
 ```bash
 cd /root/clawd/skills/hn-digest
-node scripts/hn_digest.js
+node skills/hn-digest/scripts/hn_digest.js
 ```
 
 Opciones útiles:
 
 ```bash
-node scripts/hn_digest.js --top 30 --minPoints 80 --tz Europe/Madrid
+node skills/hn-digest/scripts/hn_digest.js --top 30 --minPoints 80 --tz Europe/Madrid
 ```
 
 Por defecto usa una caché local (últimos 7 días) para **evitar repetir historias** entre ejecuciones.
 
 ```bash
 # Cambiar ventana de caché / path
-node scripts/hn_digest.js --cacheDays 7 --cachePath /tmp/hn-seen.json
+node skills/hn-digest/scripts/hn_digest.js --cacheDays 7 --cachePath /tmp/hn-seen.json
 
 # Si quieres más “pool” para evitar repeticiones, sube topFetch
-node scripts/hn_digest.js --topFetch 150
+node skills/hn-digest/scripts/hn_digest.js --topFetch 200
 ```
 
 Salida: Markdown listo para Telegram.

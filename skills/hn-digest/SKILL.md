@@ -7,11 +7,26 @@ description: Genera un digest curado de Hacker News. Usar cuando el usuario pida
 
 Genera un resumen diario de las mejores historias de Hacker News, personalizado para newuni.
 
-## Cómo ejecutar
+## Cómo ejecutar (canónico)
 
-1. Fetch top 30 stories: `https://hacker-news.firebaseio.com/v0/topstories.json`
-2. Fetch detalles de cada historia: `https://hacker-news.firebaseio.com/v0/item/{id}.json`
-3. Aplicar filtros y generar resumen
+```bash
+node /root/clawd/skills/hn-digest/skills/hn-digest/scripts/hn_digest.js \
+  --top 30 \
+  --topFetch 200 \
+  --minPoints 80 \
+  --tz Europe/Madrid \
+  --cacheDays 7
+```
+
+- Cache anti-repetidos: `/root/clawd/skills/hn-digest/skills/hn-digest/.cache/seen.json`
+- `topFetch` sirve para tener pool suficiente y que en llamadas consecutivas siga habiendo unseen.
+
+## Cómo funciona (resumen)
+
+1. Fetch top stories: `https://hacker-news.firebaseio.com/v0/topstories.json`
+2. Fetch detalles: `https://hacker-news.firebaseio.com/v0/item/{id}.json`
+3. Filtra (puntos + exclusiones) + quita “seen” vía cache
+4. Renderiza el digest y marca como “seen” lo emitido
 
 ## Filtros del usuario
 

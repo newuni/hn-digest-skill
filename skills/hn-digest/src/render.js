@@ -9,23 +9,14 @@ export function storyUrl(item) {
   return item?.url || hnLink(item?.id);
 }
 
-export function defaultBlurb(title = '') {
-  const t = title.toLowerCase();
-  if (t.includes('paper') || t.includes('research'))
-    return 'Lectura con sustancia (más investigación que hype), buena para sacar ideas aplicables.';
-  if (/(benchmark|performance|faster|latency)/.test(t))
-    return 'Rendimiento y trade-offs reales; suele haber detalles jugosos en comentarios.';
-  if (/(open source|oss|mit|apache|github)/.test(t))
-    return 'Huele a herramienta/librería para probar y robar patrones de diseño.';
-  if (/(security|cve|vulnerability|exploit|privacy)/.test(t))
-    return 'Señales útiles de seguridad/privacidad y mitigaciones prácticas.';
-  if (/(llm|gpt|ai|ml|transformer)/.test(t))
-    return 'Señales sobre IA/LLMs aplicada: arquitectura, producto o investigación.';
-  return 'Tema con tracción hoy; merece vistazo por el ángulo técnico y la discusión.';
+// If summarize.sh did not produce a summary, we prefer to show no blurb at all.
+// (Avoid generic filler lines that add little value.)
+export function defaultBlurb(_title = '') {
+  return '';
 }
 
 export function blurbFor(item) {
-  return (item && item._summary) ? item._summary : defaultBlurb(item?.title ?? '');
+  return (item && item._summary) ? item._summary : '';
 }
 
 export function renderDigest({
@@ -48,7 +39,10 @@ export function renderDigest({
     const com = it.descendants ?? 0;
     lines.push(`**${it.title}**`);
     lines.push(`🔥 ${pts} pts · ${com} comentarios`);
-    lines.push(blurbFor(it));
+    {
+      const blurb = blurbFor(it);
+      if (blurb) lines.push(blurb);
+    }
     lines.push(`📎 ${storyUrl(it)}`);
     lines.push(`💬 ${hnLink(it.id)}`);
     lines.push('');
@@ -65,7 +59,10 @@ export function renderDigest({
       const pts = it.score ?? 0;
       const com = it.descendants ?? 0;
       lines.push(`- **${it.title}** (${pts} pts) · ${com} com`);
-      lines.push(`  ${blurbFor(it)}`);
+      {
+        const blurb = blurbFor(it);
+        if (blurb) lines.push(`  ${blurb}`);
+      }
       lines.push(`  📎 ${storyUrl(it)}`);
       lines.push(`  💬 ${hnLink(it.id)}`);
     }
@@ -82,7 +79,10 @@ export function renderDigest({
       const com = it.descendants ?? 0;
       lines.push(`**${it.title}**`);
       lines.push(`${pts} pts · ${com} comentarios`);
-      lines.push(blurbFor(it));
+      {
+        const blurb = blurbFor(it);
+        if (blurb) lines.push(blurb);
+      }
       lines.push(`📎 ${storyUrl(it)}`);
       lines.push(`💬 ${hnLink(it.id)}`);
       lines.push('');
@@ -90,8 +90,6 @@ export function renderDigest({
   }
 
   lines.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  lines.push('');
-  lines.push('🐙 Nimbus · Sin Apple, sin coches, puro tech');
 
   // Avoid trailing whitespace / too many blank lines
   return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';

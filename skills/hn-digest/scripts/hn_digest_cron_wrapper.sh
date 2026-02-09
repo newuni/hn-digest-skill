@@ -17,7 +17,7 @@ fi
 
 # Anti-repeat window across digests: 336h = 14 days.
 # Increase if you still see repeats.
-SEEN_TTL_HOURS="336"
+SEEN_TTL_HOURS="720"
 
 node "$SCRIPT_DIR/hn_digest.js" \
   --list topstories \

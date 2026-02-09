@@ -18,8 +18,9 @@ function parseArgs(argv) {
     maxPerCategory: 5,
     highlights: 5,
 
-    // Seen TTL controls "no repeats" window. Default: 24h (not 7 days).
-    seenTtlHours: 24,
+    // Seen TTL controls the "no repeats" window across digests.
+    // Default: 14 days.
+    seenTtlHours: 24 * 14,
 
     // Per-item summaries via summarize.sh CLI (best-effort)
     summarize: true,

@@ -7,24 +7,18 @@ description: Genera un digest curado de Hacker News. Usar cuando el usuario pida
 
 Genera un resumen diario de las mejores historias de Hacker News, personalizado para newuni.
 
-## Cómo ejecutar (canónico)
+## Punto de entrada (único y canónico)
+
+**Siempre** ejecutar el wrapper (manual y cron). Es el único punto de verdad para flags como `seenTtlHours`.
 
 ```bash
-node /root/clawd/skills/hn-digest/skills/hn-digest/scripts/hn_digest.js \
-  --list topstories \
-  --top 30 \
-  --topFetch 250 \
-  --minPoints 80 \
-  --tz Europe/Madrid \
-  --seenTtlHours 24 \
-  --summarize \
-  --summarizeLength short \
-  --summarizeLanguage es
+/root/clawd/skills/hn-digest/skills/hn-digest/scripts/hn_digest_cron_wrapper.sh
 ```
 
+Notas:
 - Cache anti-repetidos + paginación determinista (cola pendiente): `/root/clawd/skills/hn-digest/skills/hn-digest/.cache/seen.json`
-- `seenTtlHours` controla la ventana de “no repetir” (por defecto 24h).
-- `topFetch` controla cuántos IDs se cargan a la cola pendiente para que cada ejecución saque *los siguientes* sin repetidos.
+- La ventana anti-repetidos se controla desde el wrapper (actualmente 30 días).
+- Evitar llamar `hn_digest.js` directamente para no introducir discrepancias.
 
 ## Cómo funciona (resumen)
 
@@ -85,8 +79,9 @@ Descripción breve del proyecto.
 
 ## Cron automático
 
-- **Job:** `hn-digest-daily`
-- **Horario:** 0 8 * * * (8:00 AM Europe/Madrid)
+- **Jobs:** `hn-digest-daily` y `hn-digest-catchup-daily`
+- Ambos ejecutan el mismo wrapper:
+  - `/root/clawd/skills/hn-digest/skills/hn-digest/scripts/hn_digest_cron_wrapper.sh`
 - **Entrega:** Telegram
 
 ## Comandos del usuario

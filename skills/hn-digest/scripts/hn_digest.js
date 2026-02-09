@@ -64,7 +64,8 @@ function parseArgs(argv) {
           `[--top N] [--topFetch N] [--minPoints N] [--tz TZ] ` +
           `[--maxPerCategory N] [--highlights N] [--seenTtlHours H] [--cachePath PATH] ` +
           `[--summarize|--no-summarize] [--summarizeLanguage es] [--summarizeLength short] [--summarizeModel MODEL] ` +
-          `[--summarizeTimeoutMs 20000] [--summarizeConcurrency 4]`
+          `[--summarizeTimeoutMs 20000] [--summarizeConcurrency 4]` +
+          `\n\nNOTE: Use scripts/hn_digest_cron_wrapper.sh as the canonical entrypoint (cron + manual) to avoid flag drift.`
       );
       process.exit(0);
     }
